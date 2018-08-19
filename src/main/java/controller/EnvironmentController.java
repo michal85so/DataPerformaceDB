@@ -21,26 +21,29 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class EnvironmentController {
 
-    @Autowired
-    private EnvironmentGenerator environmentGenerator;
-
-    @Autowired
-    private EnvironmentNoSQLRepository environmentMongoRepository;
-
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private SessionFactory sessionFactory;
+    private final EnvironmentGenerator environmentGenerator;
+    private final EnvironmentNoSQLRepository environmentMongoRepository;
+    private final DataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
+    private final SessionFactory sessionFactory;
 
     private final int RECORDS_IN_ONE_EXECUCION = 10000;
-
     private final String INSERT_ENVIRONMENT = "INSERT INTO " +
             "environment(id, producer, category, model, price, customer_price, items, warranty) " +
             "VALUES (?,?,?,?,?,?,?,?)";
+
+    @Autowired
+    public EnvironmentController(EnvironmentGenerator environmentGenerator,
+                                 EnvironmentNoSQLRepository environmentMongoRepository,
+                                 DataSource dataSource,
+                                 JdbcTemplate jdbcTemplate,
+                                 SessionFactory sessionFactory) {
+        this.environmentGenerator = environmentGenerator;
+        this.environmentMongoRepository = environmentMongoRepository;
+        this.dataSource = dataSource;
+        this.jdbcTemplate = jdbcTemplate;
+        this.sessionFactory = sessionFactory;
+    }
 
     public long insertsViaJdbcPreparedStatement() {
         try (Connection connection = dataSource.getConnection()) {

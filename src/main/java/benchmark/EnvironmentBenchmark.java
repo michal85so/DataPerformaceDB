@@ -12,14 +12,25 @@ public class EnvironmentBenchmark {
 
     @Autowired
     private EnvironmentController environmentController;
-    int numberOfIterations = 10;
+    private static final int NUMBER_OF_ITERATIONS = 10;
 
     public void runInserts() {
-        run("inserts via jdbc prepared statement", () -> environmentController.insertsViaJdbcPreparedStatement());
-        run("inserts via jdbc batch prepared statement", () -> environmentController.insertsViaJdbcBatch());
-        run("inserts via jdbc template", () -> environmentController.insertsViaJdbcTemplate());
-        run("inserts via mongodb", () -> environmentController.insertsViaMongo());
-        run("inserts via hibernate", () -> environmentController.insertsViaHibernate());
+        executeInserts("inserts via jdbc prepared statement", () -> environmentController.insertsViaJdbcPreparedStatement());
+        executeInserts("inserts via jdbc batch prepared statement", () -> environmentController.insertsViaJdbcBatch());
+        executeInserts("inserts via jdbc template", () -> environmentController.insertsViaJdbcTemplate());
+        executeInserts("inserts via mongodb", () -> environmentController.insertsViaMongo());
+        executeInserts("inserts via hibernate", () -> environmentController.insertsViaHibernate());
+    }
+
+    private void executeInserts(String text, Supplier<Long> function) {
+        long counter = 0;
+        IntStream.rangeClosed(1, 5).forEach(i -> System.out.println("running up test: " + function.get()));
+        for (int i = 0; i < NUMBER_OF_ITERATIONS; i++) {
+            long singleExecutionTime = function.get();
+            counter += singleExecutionTime;
+            System.out.println(text + ": " + (singleExecutionTime));
+        }
+        System.out.println(text + "(avg): " + (counter / NUMBER_OF_ITERATIONS));
     }
 
     public void runUpdates() {
@@ -34,14 +45,5 @@ public class EnvironmentBenchmark {
 
     }
 
-    public void run(String text, Supplier<Long> function) {
-        long counter = 0;
-        IntStream.rangeClosed(1, 5).forEach(i -> System.out.println("running up test: " + function.get()));
-        for (int i = 0; i < numberOfIterations; i++) {
-            long singleExecutionTime = function.get();
-            counter += singleExecutionTime;
-            System.out.println(text + ": " + (singleExecutionTime));
-        }
-        System.out.println(text + "(avg): " + (counter / numberOfIterations));
-    }
+
 }
