@@ -1,64 +1,47 @@
 package benchmark;
 
-import domain.Environment;
-import generator.EnvironmentGenerator;
+import controller.EnvironmentController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import repository.EnvironmentRepository;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 @Component
 public class EnvironmentBenchmark {
 
     @Autowired
-    private EnvironmentGenerator environmentGenerator;
+    private EnvironmentController environmentController;
+    int numberOfIterations = 10;
 
-    @Autowired
-    private EnvironmentRepository environmentMongoRepository;
+    public void runInserts() {
+        run("inserts via jdbc prepared statement", () -> environmentController.insertsViaJdbcPreparedStatement());
+        run("inserts via jdbc batch prepared statement", () -> environmentController.insertsViaJdbcBatch());
+        run("inserts via jdbc template", () -> environmentController.insertsViaJdbcTemplate());
+        run("inserts via mongodb", () -> environmentController.insertsViaMongo());
+        run("inserts via hibernate", () -> environmentController.insertsViaHibernate());
+    }
 
-    @Autowired
-    private DataSource dataSource;
-
-
-    private final String INSERT_ENVIRONMENT = "insert into environment(id, producer, category, model, price, customer_price, items, warranty) values (?,?,?,?,?,?,?,?)";
-
-    public void testInsertsViaJdbcPreparedStatement() throws SQLException {
-        Connection connection = dataSource.getConnection();
-
-        List<PreparedStatement> statements = new ArrayList<>();
-
-        List<Environment> environments = environmentGenerator.generateANumber(1000);
-
-        for (Environment environment : environments) {
-            PreparedStatement statement = connection.prepareStatement(INSERT_ENVIRONMENT);
-            fillStatement(environment, statement);
-            statements.add(statement);
-        }
-
-        for (PreparedStatement statement : statements) {
-            statement.execute();
-        }
+    public void runUpdates() {
 
     }
 
-    private void fillStatement(Environment environment, PreparedStatement statement) {
-        try {
-            statement.setInt(1, environment.getId());
-            statement.setString(2, environment.getProducer());
-            statement.setString(3, environment.getCategory());
-            statement.setString(4, environment.getModel());
-            statement.setDouble(5, environment.getPrice());
-            statement.setDouble(6, environment.getCustomerPrice());
-            statement.setInt(7, environment.getItems());
-            statement.setInt(8, environment.getWarranty());
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void runSelects() {
+
+    }
+
+    public void runDeletes() {
+
+    }
+
+    public void run(String text, Supplier<Long> function) {
+        long counter = 0;
+        IntStream.rangeClosed(1, 5).forEach(i -> System.out.println("running up test: " + function.get()));
+        for (int i = 0; i < numberOfIterations; i++) {
+            long singleExecutionTime = function.get();
+            counter += singleExecutionTime;
+            System.out.println(text + ": " + (singleExecutionTime));
         }
+        System.out.println(text + "(avg): " + (counter / numberOfIterations));
     }
 }

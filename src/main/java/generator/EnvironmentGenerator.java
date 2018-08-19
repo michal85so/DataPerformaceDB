@@ -10,10 +10,15 @@ import java.util.stream.IntStream;
 
 @Component
 public class EnvironmentGenerator implements Generator<Environment> {
+    private static int startNumber = 0;
 
     public List<Environment> generateANumber(int number) {
+        int to = startNumber + number;
+        int from = startNumber + 1;
+        startNumber += number;
+
         return IntStream
-                .rangeClosed(1, number)
+                .rangeClosed(from, to)
                 .mapToObj(this::createEntity)
                 .collect(Collectors.toList());
     }

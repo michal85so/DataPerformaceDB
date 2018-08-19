@@ -3,5 +3,5 @@ package repository;
 import domain.Environment;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface EnvironmentRepository extends MongoRepository<Environment, String> {
+public interface EnvironmentNoSQLRepository extends MongoRepository<Environment, String> {
 }

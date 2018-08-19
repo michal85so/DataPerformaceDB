@@ -1,13 +1,10 @@
 package domain;
 
 import lombok.*;
-import org.hibernate.annotations.*;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
 @Getter
 @Setter
@@ -16,7 +13,6 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Entity(name = "environment")
-@Table(name = "environment")
 @Document(collection = "environment")
 public class Environment {
 
