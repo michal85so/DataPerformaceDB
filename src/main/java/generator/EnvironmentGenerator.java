@@ -24,6 +24,13 @@ public class EnvironmentGenerator implements Generator<Environment> {
     }
 
     private Environment createEntity(int id) {
-        return new Environment(id, "producer" + id, "category" + id, "model" + id, id, id, id, id);
+        return new Environment(id,
+                "producer" + id,
+                "category" + id,
+                "model" + id,
+                id,
+                id,
+                id,
+                id);
     }
 }

@@ -13,24 +13,41 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
-public class InsertEnvironmentController extends AbstractEnvironmentController{
+public class InsertEnvironmentController extends AbstractEnvironmentController {
 
     private final int RECORDS_IN_ONE_EXECUTION = 10000;
     private final String INSERT_ENVIRONMENT = "INSERT INTO " +
             "environment(id, producer, category, model, price, customer_price, items, warranty) " +
             "VALUES (?,?,?,?,?,?,?,?)";
 
+    private void fillStatement(Environment environment, PreparedStatement statement) {
+        try {
+            statement.setInt(1, environment.getId());
+            statement.setString(2, environment.getProducer());
+            statement.setString(3, environment.getCategory());
+            statement.setString(4, environment.getModel());
+            statement.setDouble(5, environment.getPrice());
+            statement.setDouble(6, environment.getCustomerPrice());
+            statement.setInt(7, environment.getItems());
+            statement.setInt(8, environment.getWarranty());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public long viaJdbcPreparedStatement() {
         try (Connection connection = dataSource.getConnection()) {
             List<Environment> environments = environmentGenerator.generateANumber(RECORDS_IN_ONE_EXECUTION);
 
             try (PreparedStatement statement = connection.prepareStatement(INSERT_ENVIRONMENT)) {
+
                 Stopwatch timer = Stopwatch.createStarted();
                 for (Environment environment : environments) {
                     fillStatement(environment, statement);
                     statement.execute();
                 }
                 timer.stop();
+
                 return timer.elapsed(TimeUnit.MILLISECONDS);
             }
         } catch (SQLException e) {
@@ -48,9 +65,11 @@ public class InsertEnvironmentController extends AbstractEnvironmentController{
                     fillStatement(environment, statement);
                     statement.addBatch();
                 }
+
                 Stopwatch timer = Stopwatch.createStarted();
                 statement.executeBatch();
                 timer.stop();
+
                 return timer.elapsed(TimeUnit.MILLISECONDS);
             }
         } catch (SQLException e) {
@@ -61,6 +80,7 @@ public class InsertEnvironmentController extends AbstractEnvironmentController{
 
     public long viaJdbcTemplate() {
         List<Environment> environments = environmentGenerator.generateANumber(RECORDS_IN_ONE_EXECUTION);
+
         Stopwatch timer = Stopwatch.createStarted();
         for (Environment environment : environments) {
             jdbcTemplate.execute(INSERT_ENVIRONMENT, (PreparedStatementCallback<Boolean>) preparedStatement -> {
@@ -69,6 +89,7 @@ public class InsertEnvironmentController extends AbstractEnvironmentController{
             });
         }
         timer.stop();
+
         return timer.elapsed(TimeUnit.MILLISECONDS);
     }
 
@@ -88,27 +109,13 @@ public class InsertEnvironmentController extends AbstractEnvironmentController{
         Session session = sessionFactory.openSession();
 
         environments.forEach(session::save);
+
         Stopwatch timer = Stopwatch.createStarted();
-        session.flush();
+        session.beginTransaction().commit();
         timer.stop();
 
         session.close();
 
         return timer.elapsed(TimeUnit.MILLISECONDS);
-    }
-
-    private void fillStatement(Environment environment, PreparedStatement statement) {
-        try {
-            statement.setInt(1, environment.getId());
-            statement.setString(2, environment.getProducer());
-            statement.setString(3, environment.getCategory());
-            statement.setString(4, environment.getModel());
-            statement.setDouble(5, environment.getPrice());
-            statement.setDouble(6, environment.getCustomerPrice());
-            statement.setInt(7, environment.getItems());
-            statement.setInt(8, environment.getWarranty());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }

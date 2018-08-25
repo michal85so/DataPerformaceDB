@@ -22,42 +22,42 @@ public class EnvironmentBenchmark {
     @Autowired
     private DeleteEnvironmentController deleteEnvironmentController;
 
-    private static final int NUMBER_OF_ITERATIONS = 1;
-    private static final int NUMBER_OF_RUNNING_UP_TEST_ITERATIONS = 2;
+    private static final int NUMBER_OF_ITERATIONS = 10;
+    private static final int NUMBER_OF_RUNNING_UP_TEST_ITERATIONS = 5;
 
     public void runInserts() {
-        executeInserts("inserts via jdbc prepared statement", () -> insertEnvironmentController.viaJdbcPreparedStatement());
-        executeInserts("inserts via jdbc batch prepared statement", () -> insertEnvironmentController.viaJdbcBatch());
-        executeInserts("inserts via jdbc template", () -> insertEnvironmentController.viaJdbcTemplate());
-        executeInserts("inserts via mongodb", () -> insertEnvironmentController.viaMongo());
-        executeInserts("inserts via hibernate", () -> insertEnvironmentController.viaHibernate());
+        execute("inserts via jdbc prepared statement", () -> insertEnvironmentController.viaJdbcPreparedStatement());
+        execute("inserts via jdbc batch prepared statement", () -> insertEnvironmentController.viaJdbcBatch());
+        execute("inserts via jdbc template", () -> insertEnvironmentController.viaJdbcTemplate());
+        execute("inserts via mongodb", () -> insertEnvironmentController.viaMongo());
+        execute("inserts via hibernate", () -> insertEnvironmentController.viaHibernate());
     }
 
     public void runUpdates() {
-        executeInserts("updates via jdbc prepared statement", () -> updateEnvironmentController.viaJdbcPreparedStatement());
-        executeInserts("updates via jdbc batch prepared statement", () -> updateEnvironmentController.viaJdbcBatch());
-        executeInserts("updates via jdbc template", () -> updateEnvironmentController.viaJdbcTemplate());
-        executeInserts("updates via mongodb", () -> updateEnvironmentController.viaMongo());
-        executeInserts("updates via hibernate", () -> updateEnvironmentController.viaHibernate());
+        execute("updates via jdbc prepared statement", () -> updateEnvironmentController.viaJdbcPreparedStatement());
+        execute("updates via jdbc batch prepared statement", () -> updateEnvironmentController.viaJdbcBatch());
+        execute("updates via jdbc template", () -> updateEnvironmentController.viaJdbcTemplate());
+        execute("updates via mongodb", () -> updateEnvironmentController.viaMongo());
+        execute("updates via hibernate", () -> updateEnvironmentController.viaHibernate());
     }
 
     public void runSelects() {
-        executeInserts("selects via jdbc prepared statement", () -> selectEnvironmentController.viaJdbcPreparedStatement());
-        executeInserts("selects via jdbc batch prepared statement", () -> selectEnvironmentController.viaJdbcBatch());
-        executeInserts("selects via jdbc template", () -> selectEnvironmentController.viaJdbcTemplate());
-        executeInserts("selects via mongodb", () -> selectEnvironmentController.viaMongo());
-        executeInserts("selects via hibernate", () -> selectEnvironmentController.viaHibernate());
+        execute("selects via jdbc prepared statement", () -> selectEnvironmentController.viaJdbcPreparedStatement());
+        execute("selects via jdbc batch prepared statement", () -> selectEnvironmentController.viaJdbcBatch());
+        execute("selects via jdbc template", () -> selectEnvironmentController.viaJdbcTemplate());
+        execute("selects via mongodb", () -> selectEnvironmentController.viaMongo());
+        execute("selects via hibernate", () -> selectEnvironmentController.viaHibernate());
     }
 
     public void runDeletes() {
-        executeInserts("deletes via jdbc prepared statement", () -> deleteEnvironmentController.viaJdbcPreparedStatement());
-        executeInserts("deletes via jdbc batch prepared statement", () -> deleteEnvironmentController.viaJdbcBatch());
-        executeInserts("deletes via jdbc template", () -> deleteEnvironmentController.viaJdbcTemplate());
-        executeInserts("deletes via mongodb", () -> deleteEnvironmentController.viaMongo());
-        executeInserts("deletes via hibernate", () -> deleteEnvironmentController.viaHibernate());
+        execute("deletes via jdbc prepared statement", () -> deleteEnvironmentController.viaJdbcPreparedStatement());
+        execute("deletes via jdbc batch prepared statement", () -> deleteEnvironmentController.viaJdbcBatch());
+        execute("deletes via jdbc template", () -> deleteEnvironmentController.viaJdbcTemplate());
+        execute("deletes via mongodb", () -> deleteEnvironmentController.viaMongo());
+        execute("deletes via hibernate", () -> deleteEnvironmentController.viaHibernate());
     }
 
-    private void executeInserts(String text, Supplier<Long> function) {
+    private void execute(String text, Supplier<Long> function) {
         long counter = 0;
         IntStream.rangeClosed(1, NUMBER_OF_RUNNING_UP_TEST_ITERATIONS)
                 .forEach(i -> System.out.println("running up test: " + function.get()));

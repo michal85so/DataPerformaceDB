@@ -43,6 +43,7 @@ public class MySqlDbConfiguration {
         Properties properties = new Properties();
         properties.setProperty("dialect", "org.hibernate.dialect.MySQL55Dialect");
         properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+//        properties.setProperty("hibernate.show_sql", "true");
 //        properties.setProperty("hibernate.jdbc.fetch_size", "10000");
         sessionFactoryBean.setHibernateProperties(properties);
         return sessionFactoryBean;
