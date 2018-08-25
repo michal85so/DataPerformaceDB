@@ -16,5 +16,6 @@ class Runner {
 
     public void run() {
         environmentBenchmark.runInserts();
+        environmentBenchmark.runUpdates();
     }
 }

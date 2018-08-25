@@ -1,6 +1,7 @@
 package benchmark;
 
-import controller.EnvironmentController;
+import controller.InsertEnvironmentController;
+import controller.UpdateEnvironmentController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,20 +12,22 @@ import java.util.stream.IntStream;
 public class EnvironmentBenchmark {
 
     @Autowired
-    private EnvironmentController environmentController;
-    private static final int NUMBER_OF_ITERATIONS = 10;
+    private InsertEnvironmentController insertEnvironmentController;
+    @Autowired
+    private UpdateEnvironmentController updateEnvironmentController;
+    private static final int NUMBER_OF_ITERATIONS = 1;
 
     public void runInserts() {
-        executeInserts("inserts via jdbc prepared statement", () -> environmentController.insertsViaJdbcPreparedStatement());
-        executeInserts("inserts via jdbc batch prepared statement", () -> environmentController.insertsViaJdbcBatch());
-        executeInserts("inserts via jdbc template", () -> environmentController.insertsViaJdbcTemplate());
-        executeInserts("inserts via mongodb", () -> environmentController.insertsViaMongo());
-        executeInserts("inserts via hibernate", () -> environmentController.insertsViaHibernate());
+        executeInserts("inserts via jdbc prepared statement", () -> insertEnvironmentController.viaJdbcPreparedStatement());
+//        executeInserts("inserts via jdbc batch prepared statement", () -> insertEnvironmentController.insertsViaJdbcBatch());
+//        executeInserts("inserts via jdbc template", () -> insertEnvironmentController.insertsViaJdbcTemplate());
+//        executeInserts("inserts via mongodb", () -> insertEnvironmentController.insertsViaMongo());
+//        executeInserts("inserts via hibernate", () -> insertEnvironmentController.insertsViaHibernate());
     }
 
     private void executeInserts(String text, Supplier<Long> function) {
         long counter = 0;
-        IntStream.rangeClosed(1, 5).forEach(i -> System.out.println("running up test: " + function.get()));
+//        IntStream.rangeClosed(1, 5).forEach(i -> System.out.println("running up test: " + function.get()));
         for (int i = 0; i < NUMBER_OF_ITERATIONS; i++) {
             long singleExecutionTime = function.get();
             counter += singleExecutionTime;
@@ -34,7 +37,10 @@ public class EnvironmentBenchmark {
     }
 
     public void runUpdates() {
-
+//        executeInserts("updates via jdbc prepared statement", () -> updateEnvironmentController.updatesViaJdbcPreparedStatement());
+//        executeInserts("updates via jdbc batch prepared statement", () -> updateEnvironmentController.updatesViaJdbcBatch());
+//        executeInserts("updates via jdbc template", () -> updateEnvironmentController.updatesViaJdbcTemplate());
+        executeInserts("updates via hibernate", () -> updateEnvironmentController.viaHibernate());
     }
 
     public void runSelects() {

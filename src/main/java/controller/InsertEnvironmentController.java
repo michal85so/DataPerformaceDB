@@ -2,16 +2,10 @@ package controller;
 
 import com.google.common.base.Stopwatch;
 import domain.Environment;
-import generator.EnvironmentGenerator;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Component;
-import repository.EnvironmentNoSQLRepository;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -19,35 +13,16 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
-public class EnvironmentController {
+public class InsertEnvironmentController extends AbstractEnvironmentController{
 
-    private final EnvironmentGenerator environmentGenerator;
-    private final EnvironmentNoSQLRepository environmentMongoRepository;
-    private final DataSource dataSource;
-    private final JdbcTemplate jdbcTemplate;
-    private final SessionFactory sessionFactory;
-
-    private final int RECORDS_IN_ONE_EXECUCION = 10000;
+    private final int RECORDS_IN_ONE_EXECUTION = 10000;
     private final String INSERT_ENVIRONMENT = "INSERT INTO " +
             "environment(id, producer, category, model, price, customer_price, items, warranty) " +
             "VALUES (?,?,?,?,?,?,?,?)";
 
-    @Autowired
-    public EnvironmentController(EnvironmentGenerator environmentGenerator,
-                                 EnvironmentNoSQLRepository environmentMongoRepository,
-                                 DataSource dataSource,
-                                 JdbcTemplate jdbcTemplate,
-                                 SessionFactory sessionFactory) {
-        this.environmentGenerator = environmentGenerator;
-        this.environmentMongoRepository = environmentMongoRepository;
-        this.dataSource = dataSource;
-        this.jdbcTemplate = jdbcTemplate;
-        this.sessionFactory = sessionFactory;
-    }
-
-    public long insertsViaJdbcPreparedStatement() {
+    public long viaJdbcPreparedStatement() {
         try (Connection connection = dataSource.getConnection()) {
-            List<Environment> environments = environmentGenerator.generateANumber(RECORDS_IN_ONE_EXECUCION);
+            List<Environment> environments = environmentGenerator.generateANumber(RECORDS_IN_ONE_EXECUTION);
 
             try (PreparedStatement statement = connection.prepareStatement(INSERT_ENVIRONMENT)) {
                 Stopwatch timer = Stopwatch.createStarted();
@@ -64,9 +39,9 @@ public class EnvironmentController {
         return -1;
     }
 
-    public long insertsViaJdbcBatch() {
+    public long viaJdbcBatch() {
         try (Connection connection = dataSource.getConnection()) {
-            List<Environment> environments = environmentGenerator.generateANumber(RECORDS_IN_ONE_EXECUCION);
+            List<Environment> environments = environmentGenerator.generateANumber(RECORDS_IN_ONE_EXECUTION);
 
             try (PreparedStatement statement = connection.prepareStatement(INSERT_ENVIRONMENT)) {
                 Stopwatch timer = Stopwatch.createStarted();
@@ -84,8 +59,8 @@ public class EnvironmentController {
         return -1;
     }
 
-    public long insertsViaJdbcTemplate() {
-        List<Environment> environments = environmentGenerator.generateANumber(RECORDS_IN_ONE_EXECUCION);
+    public long viaJdbcTemplate() {
+        List<Environment> environments = environmentGenerator.generateANumber(RECORDS_IN_ONE_EXECUTION);
 
         Stopwatch timer = Stopwatch.createStarted();
         for (Environment environment : environments) {
@@ -98,8 +73,8 @@ public class EnvironmentController {
         return timer.elapsed(TimeUnit.MILLISECONDS);
     }
 
-    public long insertsViaMongo() {
-        List<Environment> environments = environmentGenerator.generateANumber(RECORDS_IN_ONE_EXECUCION);
+    public long viaMongo() {
+        List<Environment> environments = environmentGenerator.generateANumber(RECORDS_IN_ONE_EXECUTION);
 
         Stopwatch timer = Stopwatch.createStarted();
         environmentMongoRepository.insert(environments);
@@ -108,8 +83,8 @@ public class EnvironmentController {
         return timer.elapsed(TimeUnit.MILLISECONDS);
     }
 
-    public long insertsViaHibernate() {
-        List<Environment> environments = environmentGenerator.generateANumber(RECORDS_IN_ONE_EXECUCION);
+    public long viaHibernate() {
+        List<Environment> environments = environmentGenerator.generateANumber(RECORDS_IN_ONE_EXECUTION);
 
         Session session = sessionFactory.openSession();
 

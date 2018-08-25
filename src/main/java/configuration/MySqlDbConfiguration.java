@@ -1,5 +1,6 @@
 package configuration;
 
+import domain.Environment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,6 +32,7 @@ public class MySqlDbConfiguration {
     public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
         LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
         sessionFactoryBean.setDataSource(dataSource);
+        sessionFactoryBean.setAnnotatedClasses(Environment.class);
         sessionFactoryBean.setPackagesToScan(new String[] {"domain"});
         Properties properties = new Properties();
         properties.setProperty("dialect", "org.hibernate.dialect.MySQL55Dialect");
