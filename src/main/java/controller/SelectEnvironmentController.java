@@ -3,6 +3,7 @@ package controller;
 import com.google.common.base.Stopwatch;
 import domain.Environment;
 import org.hibernate.Session;
+import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class SelectEnvironmentController extends AbstractEnvironmentController {
 
     private final String SELECT_STATEMENT = "select * from environment where id = ?";
@@ -30,7 +32,7 @@ public class SelectEnvironmentController extends AbstractEnvironmentController {
                 Stopwatch timer = Stopwatch.createStarted();
                 for (Integer id : ids) {
                     statement.setInt(1, id);
-                    statement.execute();
+                    statement.executeQuery();
                 }
                 timer.stop();
                 return timer.elapsed(TimeUnit.MILLISECONDS);
@@ -58,7 +60,12 @@ public class SelectEnvironmentController extends AbstractEnvironmentController {
 
     @Override
     public long viaMongo() {
-        return 0;
+        Stopwatch timer = Stopwatch.createStarted();
+        for (Integer id : ids)
+            environmentMongoRepository.findOne(String.valueOf(id));
+        timer.stop();
+
+        return timer.elapsed(TimeUnit.MILLISECONDS);
     }
 
     @Override

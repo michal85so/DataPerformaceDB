@@ -20,12 +20,18 @@ public class MySqlDbConfiguration {
         dataSource.setUrl("jdbc:mysql://localhost:3306/DataPerformanceDB");
         dataSource.setUsername("root");
         dataSource.setPassword("root");
+        Properties properties = new Properties();
+//        properties.put("defaultRowPrefetch", "10000");
+//        properties.put("defaultBatchValue", "10000");
+        dataSource.setConnectionProperties(properties);
         return dataSource;
     }
 
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+//        jdbcTemplate.setFetchSize(10000);
+        return jdbcTemplate;
     }
 
     @Bean
@@ -37,6 +43,7 @@ public class MySqlDbConfiguration {
         Properties properties = new Properties();
         properties.setProperty("dialect", "org.hibernate.dialect.MySQL55Dialect");
         properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+//        properties.setProperty("hibernate.jdbc.fetch_size", "10000");
         sessionFactoryBean.setHibernateProperties(properties);
         return sessionFactoryBean;
     }

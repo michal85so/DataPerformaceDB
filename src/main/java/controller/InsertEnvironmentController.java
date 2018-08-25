@@ -44,11 +44,11 @@ public class InsertEnvironmentController extends AbstractEnvironmentController{
             List<Environment> environments = environmentGenerator.generateANumber(RECORDS_IN_ONE_EXECUTION);
 
             try (PreparedStatement statement = connection.prepareStatement(INSERT_ENVIRONMENT)) {
-                Stopwatch timer = Stopwatch.createStarted();
                 for (Environment environment : environments) {
                     fillStatement(environment, statement);
                     statement.addBatch();
                 }
+                Stopwatch timer = Stopwatch.createStarted();
                 statement.executeBatch();
                 timer.stop();
                 return timer.elapsed(TimeUnit.MILLISECONDS);
@@ -61,7 +61,6 @@ public class InsertEnvironmentController extends AbstractEnvironmentController{
 
     public long viaJdbcTemplate() {
         List<Environment> environments = environmentGenerator.generateANumber(RECORDS_IN_ONE_EXECUTION);
-
         Stopwatch timer = Stopwatch.createStarted();
         for (Environment environment : environments) {
             jdbcTemplate.execute(INSERT_ENVIRONMENT, (PreparedStatementCallback<Boolean>) preparedStatement -> {
@@ -88,8 +87,8 @@ public class InsertEnvironmentController extends AbstractEnvironmentController{
 
         Session session = sessionFactory.openSession();
 
-        Stopwatch timer = Stopwatch.createStarted();
         environments.forEach(session::save);
+        Stopwatch timer = Stopwatch.createStarted();
         session.flush();
         timer.stop();
 

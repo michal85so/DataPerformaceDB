@@ -13,8 +13,11 @@ class Runner {
 
     @Autowired
     private EnvironmentBenchmark environmentBenchmark;
+    @Autowired
+    private Cleaner cleaner;
 
     public void run() {
+        cleaner.cleanAllData();
         environmentBenchmark.runInserts();
         environmentBenchmark.runUpdates();
     }

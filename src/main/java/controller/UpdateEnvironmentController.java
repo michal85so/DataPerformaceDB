@@ -65,7 +65,14 @@ public class UpdateEnvironmentController extends AbstractEnvironmentController {
     }
 
     public long viaMongo() {
-        return -1;
+        List<Environment> environments = environmentMongoRepository.findAll();
+        environments.forEach(environment -> environment.setProducer("mongo producer " + environment.getId()));
+
+        Stopwatch timer = Stopwatch.createStarted();
+        environmentMongoRepository.save(environments);
+        timer.stop();
+
+        return timer.elapsed(TimeUnit.MILLISECONDS);
     }
 
     public long viaHibernate() {
