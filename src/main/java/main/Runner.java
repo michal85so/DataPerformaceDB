@@ -18,7 +18,10 @@ class Runner {
 
     public void run() {
         cleaner.cleanAllData();
+
         environmentBenchmark.runInserts();
         environmentBenchmark.runUpdates();
+        environmentBenchmark.runSelects();
+        environmentBenchmark.runDeletes();
     }
 }
